@@ -14,7 +14,7 @@ def parse_arg():
     parser = argparse.ArgumentParser()
     parser.add_argument('--downsample-ratio', default=8, type=int,
                         help='the downsample ratio of the model')
-    parser.add_argument('--data-dir', default='QNRF/val',
+    parser.add_argument('--data-dir', default='',
                         help='the directory of the data')
     parser.add_argument('--model-path', default='best_model.pth',
                         help='the path to the model')
