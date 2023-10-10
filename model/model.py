@@ -56,9 +56,8 @@ class VGG(nn.Module):
         pred_den = self.reg_head(feat)
         cls_score_max = cls_score.max(dim=1, keepdim=True)[0]
         cls_score = cls_score - cls_score_max
-        # ONLY FOR JHU-CROWD++, although the training would be unstable for QNRF, but it won't stop you from getting a good model
-        # return torch.clamp(pred_den, max=25), cls_score
         return pred_den, cls_score
+
 
 def make_layers(cfg, batch_norm=False):
     layers = []
@@ -97,6 +96,7 @@ class Upsample(nn.Module):
 
         x = self.conv2(x)
         return x
+
 
 def vgg19(num_classes):
     """VGG 19-layer model (configuration "E")
