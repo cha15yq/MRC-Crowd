@@ -6,7 +6,7 @@ from utils.regression_trainer import Reg_Trainer
 
 def parse_arg():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--content', default="MT-CSRNET40-UCF-t5", type=str,
+    parser.add_argument('--content', default="test", type=str,
                         help='what is it?')
     parser.add_argument('--label-info', default='label_list/ucf-40.txt', type=str,
                         help='the path to the label information')
@@ -33,7 +33,7 @@ def parse_arg():
     # Optimizer
     parser.add_argument('--weight-decay', type=float, default=1e-4,
                         help='weight decay')
-    parser.add_argument('--lr', default=1e-5, type=float,
+    parser.add_argument('--lr', default=2e-5, type=float,
                         help='the learning rate')
     parser.add_argument('--num-workers', default=0, type=int,
                         help='the number of workers')
