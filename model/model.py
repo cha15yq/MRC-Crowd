@@ -57,6 +57,8 @@ class VGG(nn.Module):
         cls_score_max = cls_score.max(dim=1, keepdim=True)[0]
         cls_score = cls_score - cls_score_max
         return pred_den, cls_score
+        # Necessary when performing experiments on JHU-Crowd++, otherwise the neural network is able to handle the bad values
+        # return torch.clamp(pred_den, max=25), cls_score
 
 
 def make_layers(cfg, batch_norm=False):
