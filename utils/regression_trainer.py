@@ -15,7 +15,6 @@ from math import ceil
 from loss.seg_loss import SegmentationLoss
 from loss.ssim_loss import cal_avg_ms_ssim
 from utils.den_cls import den2cls, cls2den
-from loss.unsupervised_loss import UnsupervisedLoss
 from utils.mask_geneator import MaskGenerator, repeat_fun
 from model.CSRNet import CSRNet
 
@@ -73,17 +72,14 @@ class Reg_Trainer(Trainer):
              0.5030269622802734, 0.6174761652946472, 0.762194037437439, 0.9506691694259644, 1.2056223154067993,
              1.5706151723861694, 2.138580322265625, 3.233219861984253, 7.914860725402832]).to(self.device)
 
-       # self.model = vgg19(len(self.label_count) + 1)
-        self.model = CSRNet(num_classes=len(self.label_count) + 1)
+        self.model = vgg19(len(self.label_count) + 1)
         self.model.to(self.device)
-      #  self.ema_model = vgg19(len(self.label_count) + 1)
-        self.ema_model =  CSRNet(num_classes=len(self.label_count) + 1)
+        self.ema_model = vgg19(len(self.label_count) + 1)
         self.ema_model.to(self.device)
         self.mask_generator = MaskGenerator(args.crop_size, args.mask_size, args.downsample_ratio, args.mask_ratio)
         self.cls_loss = SegmentationLoss().to(self.device)
 
         self.optimizer = torch.optim.AdamW(self.model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
-        # ONLY ONRF
 
         self.start_epoch = 0
         self.global_step = 0
@@ -139,13 +135,12 @@ class Reg_Trainer(Trainer):
                 input_mask = 1 - masks.repeat_interleave(8, 1).repeat_interleave(8, 2).unsqueeze(1).contiguous()
                 pred, cls_score = self.model(w_inputs[labels])
                 ################Supervised Loss###############
-                #reg_loss = get_reg_loss(pred, gt_den_map[labels])
-                reg_loss = nn.L1Loss()(pred, gt_den_map[labels])
+                reg_loss = get_reg_loss(pred, gt_den_map[labels])
                 epoch_reg_loss.update(reg_loss.item(), N_l)
                 gt_cls_map = den2cls(gt_den_map, self.label_count)
                 cls_loss = self.cls_loss(cls_score, gt_cls_map[labels]).mean()
                 epoch_cls_loss.update(cls_loss.item(), N_l)
-                loss = 0.1 * cls_loss + reg_loss
+                loss = cls_loss + reg_loss
                 ###############UnSupervised Loss#################
                 self.update_ema_model(self.model, self.ema_model, self.args.ema_decay, self.global_step)
                 masks = masks.unsqueeze(1)
@@ -159,7 +154,7 @@ class Reg_Trainer(Trainer):
                 u_mreg_loss = (nn.L1Loss(reduction='none')(u_s_reg, u_t_reg) * masks).sum() / (masks.sum() + 1e-5)
                 u_mcls_loss = (nn.L1Loss(reduction='none')(u_s_cls.softmax(dim=1), u_t_cls.softmax(dim=1)) * masks).sum() / (masks.sum() + 1e-5)
                 cons_loss = u_mreg_loss + u_mcls_loss
-                loss += 0.5 * cons_loss * self.ramup(self.epoch)
+                loss += cons_loss * self.ramup(self.epoch)
                 epoch_unsupervised_loss.update(cons_loss.item(), N_u)
 
                 gt_counts = torch.sum(gt_den_map[labels].view(N_l, -1), dim=1).detach().cpu().numpy()
