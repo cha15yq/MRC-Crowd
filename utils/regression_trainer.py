@@ -16,7 +16,6 @@ from loss.seg_loss import SegmentationLoss
 from loss.ssim_loss import cal_avg_ms_ssim
 from utils.den_cls import den2cls, cls2den
 from utils.mask_geneator import MaskGenerator, repeat_fun
-from model.CSRNet import CSRNet
 
 
 def get_normalized_map(density_map):
