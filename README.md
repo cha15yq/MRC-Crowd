@@ -1,9 +1,13 @@
 # Semi-Supervised Crowd Counting with Contextual Modeling: Facilitating Holistic Understanding of Crowd Scenes
+Some more details will be provided later
 
 ![avatar](/framework.png)
 
 # Results
 ![avatar](/result.png)
+
+# Pretrained Model
+We provide pretrained models [here](https://drive.google.com/drive/folders/1NPbi5QV8LynKlqxUg1mmwB9FagyZdf6E?usp=sharing).
 
 # Eniviroment
 timm==0.5.4<br />
@@ -15,5 +19,5 @@ h5py <br />
 pillow<br />
 tqdm<br />
 
-How to use the code will be provided later.
+
 
