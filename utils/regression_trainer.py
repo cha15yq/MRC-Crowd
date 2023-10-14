@@ -11,10 +11,10 @@ import time
 import random
 import torch.nn.functional as F
 import torch.nn as nn
-from math import ceil
 from loss.seg_loss import SegmentationLoss
 from loss.ssim_loss import cal_avg_ms_ssim
-from utils.den_cls import den2cls, cls2den
+from utils.den_cls import den2cls
+from loss.unsupervised_loss import UnsupervisedLoss
 from utils.mask_geneator import MaskGenerator, repeat_fun
 
 
@@ -77,9 +77,8 @@ class Reg_Trainer(Trainer):
         self.ema_model.to(self.device)
         self.mask_generator = MaskGenerator(args.crop_size, args.mask_size, args.downsample_ratio, args.mask_ratio)
         self.cls_loss = SegmentationLoss().to(self.device)
-
+        
         self.optimizer = torch.optim.AdamW(self.model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
-
         self.start_epoch = 0
         self.global_step = 0
         self.ramup = exp_rampup(args.weight_ramup)
@@ -111,8 +110,7 @@ class Reg_Trainer(Trainer):
     def train_epoch(self):
         epoch_reg_loss = AverageMeter()
         epoch_cls_loss = AverageMeter()
-        epoch_unsupervised_loss = AverageMeter()
-        epoch_new_loss = AverageMeter()
+        epoch_unsupervised_loss =AverageMeter()
         epoch_mae = AverageMeter()
         epoch_mse = AverageMeter()
         epoch_start = time.time()
@@ -130,8 +128,6 @@ class Reg_Trainer(Trainer):
                 N = w_inputs.size(0)
                 N_l = w_inputs[labels].size(0)
                 N_u = w_inputs.size(0) - N_l
-                masks = repeat_fun(N_u, self.mask_generator).to(self.device)
-                input_mask = 1 - masks.repeat_interleave(8, 1).repeat_interleave(8, 2).unsqueeze(1).contiguous()
                 pred, cls_score = self.model(w_inputs[labels])
                 ################Supervised Loss###############
                 reg_loss = get_reg_loss(pred, gt_den_map[labels])
@@ -139,22 +135,24 @@ class Reg_Trainer(Trainer):
                 gt_cls_map = den2cls(gt_den_map, self.label_count)
                 cls_loss = self.cls_loss(cls_score, gt_cls_map[labels]).mean()
                 epoch_cls_loss.update(cls_loss.item(), N_l)
+
                 loss = cls_loss + reg_loss
                 ###############UnSupervised Loss#################
                 self.update_ema_model(self.model, self.ema_model, self.args.ema_decay, self.global_step)
-                masks = masks.unsqueeze(1)
-
+                masks = repeat_fun(N_u, self.mask_generator).to(self.device)
+                input_mask = 1 - masks.repeat_interleave(8, 1).repeat_interleave(8, 2).unsqueeze(1).contiguous() # masked area=0, unmasked = 1
+                masks = masks.unsqueeze(1) # masked area =1, unmasked = 0
                 u_s_reg, u_s_cls = self.model(s_inputs[labels == 0] * input_mask)
                 with torch.no_grad():
                     u_t_reg, u_t_cls = self.ema_model(w_inputs[labels == 0])
                     u_t_cls = u_t_cls.detach()
-                    u_t_reg = u_t_reg.detach()
-
+                    u_t_reg = u_t_reg.detach()          
                 u_mreg_loss = (nn.L1Loss(reduction='none')(u_s_reg, u_t_reg) * masks).sum() / (masks.sum() + 1e-5)
                 u_mcls_loss = (nn.L1Loss(reduction='none')(u_s_cls.softmax(dim=1), u_t_cls.softmax(dim=1)) * masks).sum() / (masks.sum() + 1e-5)
                 cons_loss = u_mreg_loss + u_mcls_loss
-                loss += cons_loss * self.ramup(self.epoch)
                 epoch_unsupervised_loss.update(cons_loss.item(), N_u)
+                #################################
+                loss += cons_loss * self.ramup(self.epoch)
 
                 gt_counts = torch.sum(gt_den_map[labels].view(N_l, -1), dim=1).detach().cpu().numpy()
                 pred_counts = torch.sum(pred.view(N_l, -1), dim=1).detach().cpu().numpy()
@@ -167,7 +165,7 @@ class Reg_Trainer(Trainer):
                 self.optimizer.step()
 
         logging.info(
-            'Epoch {} Train, reg:{:.4f}, cls_score:{:.4f}, unsupervised:{:.4f}, mae:{:.2f}, mse:{:.2f}, Cost: {:.1f} sec '
+            'Epoch {} Train, reg:{:.4f}, cls_score:{:.4f}, unsupervised:{:.4f} mae:{:.2f}, mse:{:.2f}, Cost: {:.1f} sec '
             .format(self.epoch, epoch_reg_loss.getAvg(), epoch_cls_loss.getAvg(), epoch_unsupervised_loss.getAvg(), epoch_mae.getAvg(),
                     np.sqrt(epoch_mse.getAvg()), (time.time() - epoch_start)))
 
