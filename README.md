@@ -2,6 +2,9 @@
 
 ![avatar](/framework.png)
 
+# Results
+![avatar](/result.jpg)
+
 # Eniviroment
 timm==0.5.4<br />
 python < 3.10<br />
