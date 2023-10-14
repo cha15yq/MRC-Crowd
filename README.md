@@ -7,7 +7,7 @@ Some more details will be provided later
 ![avatar](/result.png)
 
 # Pretrained Model
-We provide pretrained models [here](https://drive.google.com/drive/folders/1NPbi5QV8LynKlqxUg1mmwB9FagyZdf6E?usp=sharing).
+We provide pretrained models [here](https://drive.google.com/drive/folders/1MOc33Usba0k-IiGaHlVCfUICjkSNSEl_?usp=sharing).
 
 # Eniviroment
 timm==0.5.4<br />
