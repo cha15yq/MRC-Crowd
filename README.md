@@ -1,4 +1,7 @@
 # Semi-Supervised Crowd Counting with Contextual Modeling: Facilitating Holistic Understanding of Crowd Scenes
+
+The list of images in the validation set for UCF-QNRF is the same with that in [BL](https://github.com/ZhihengCV/Bayesian-Crowd-Counting). I will update the preprocess code later.
+
 Some more details will be provided later
 
 ![avatar](/framework.png)
