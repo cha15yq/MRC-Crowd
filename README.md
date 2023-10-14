@@ -3,7 +3,7 @@
 ![avatar](/framework.png)
 
 # Results
-![avatar](/result.jpg)
+![avatar](/result.png)
 
 # Eniviroment
 timm==0.5.4<br />
