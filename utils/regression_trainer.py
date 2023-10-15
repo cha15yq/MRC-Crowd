@@ -14,7 +14,6 @@ import torch.nn as nn
 from loss.seg_loss import SegmentationLoss
 from loss.ssim_loss import cal_avg_ms_ssim
 from utils.den_cls import den2cls
-from loss.unsupervised_loss import UnsupervisedLoss
 from utils.mask_geneator import MaskGenerator, repeat_fun
 
 
