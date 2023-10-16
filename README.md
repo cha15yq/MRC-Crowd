@@ -10,7 +10,7 @@ Some more details will be provided later
 ![avatar](/result.png)
 
 # Pretrained Model
-We provide pretrained models [here](https://drive.google.com/drive/folders/1MOc33Usba0k-IiGaHlVCfUICjkSNSEl_?usp=sharing).
+The pretrained models could be downloaded from [Google Drive](https://drive.google.com/drive/folders/1MOc33Usba0k-IiGaHlVCfUICjkSNSEl_?usp=sharing) or [OneDrive](https://universityofstandrews907-my.sharepoint.com/:f:/g/personal/yq1_st-andrews_ac_uk/ErSqBStXrMJPq1mpNWZuwhUBcXDVSCM8MYWkyihZ7iqxpw?e=UwVdVD).
 
 # Eniviroment
 timm==0.5.4<br />
