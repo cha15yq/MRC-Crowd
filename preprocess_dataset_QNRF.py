@@ -82,9 +82,13 @@ def generate_data(im_path):
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Data processing')
-    parser.add_argument('--origin-dir', default=r'C:\Users\yifei\Desktop\UCF-QNRF_ECCV18',
+    parser.add_argument('--origin-dir', default='UCF-QNRF_ECCV18',
                         help='orginal data directory')
-    parser.add_argument('--data-dir', default='QNRF',
+    parser.add_argument('--train-list', default='train.txt',
+                        help='train list')
+    parser.add_argument('--val-list', default='val.txt',
+                        help='val list')
+    parser.add_argument('--data-dir', default='processed_QNRF',
                         help='processed data directory')
     args = parser.parse_args()
     return args
@@ -95,8 +99,9 @@ if __name__ == '__main__':
     save_dir = args.data_dir
     min_size = 512
     max_size = 1920
-
-    for phase in ['train', 'test']:
+    train_info = args.train_list
+    val_info = args.val_list
+    for phase in ['train', 'val', 'test']:
         sub_dir = os.path.join(args.data_dir, phase)
         sub_dir_img = os.path.join(sub_dir, 'images')
         sub_dir_pts = os.path.join(sub_dir, 'gt_points')
@@ -105,27 +110,35 @@ if __name__ == '__main__':
             os.makedirs(sub_dir_img)
             os.makedirs(sub_dir_pts)
         if phase == 'train':
-            im_list = sorted(glob(os.path.join(args.origin_dir, 'Train', "*.jpg")))
+            im_list = []
+            with open(train_info) as f:
+                for i in f:
+                    im_list.append(os.path.join(args.origin_dir, 'Train', i.strip()))
             sub_dir_den = os.path.join(sub_dir, 'gt_den')
             if not os.path.exists(sub_dir_den):
                 os.makedirs(sub_dir_den)
+        elif phase == 'val':
+            im_list = []
+            with open(val_info) as f:
+                for i in f:
+                    im_list.append(os.path.join(args.origin_dir, 'Train', i.strip()))
         else:
             im_list = sorted(glob(os.path.join(args.origin_dir, 'Test', "*.jpg")))
         for im_path in tqdm.tqdm(im_list):
             im, points = generate_data(im_path)
             name = os.path.basename(im_path)
-            if phase == 'train':
-                w, h = im.size
-                d = np.zeros((h, w))
-                for j in range(len(points)):
-                    point_x, point_y = points[j][0: 2].astype('int')
-                    if point_y >= h or point_x >= w:
-                        continue
-                    d[point_y, point_x] = 1
-                d = gaussian_filter_density(d)
-                with h5py.File(os.path.join(sub_dir_den, '{}.h5'.format(name.replace('.jpg', ''))), 'w') as hf:
-                    hf['density_map'] = d
-                print(name, 'GT_num:', len(points), 'Density_sum: {:.2f}'.format(d.sum()))
+            # if phase == 'train':
+            #     w, h = im.size
+            #     d = np.zeros((h, w))
+            #     for j in range(len(points)):
+            #         point_x, point_y = points[j][0: 2].astype('int')
+            #         if point_y >= h or point_x >= w:
+            #             continue
+            #         d[point_y, point_x] = 1
+            #     d = gaussian_filter_density(d)
+            #     with h5py.File(os.path.join(sub_dir_den, '{}.h5'.format(name.replace('.jpg', ''))), 'w') as hf:
+            #         hf['density_map'] = d
+            #     print(name, 'GT_num:', len(points), 'Density_sum: {:.2f}'.format(d.sum()))
             im_save_path = os.path.join(sub_dir_img, name)
             im.save(im_save_path)
             gd_save_path = im_save_path.replace('jpg', 'npy').replace('images', 'gt_points')
