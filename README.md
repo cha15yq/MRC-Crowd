@@ -1,6 +1,6 @@
 # Semi-Supervised Crowd Counting with Contextual Modeling: Facilitating Holistic Understanding of Crowd Scenes
 
-The list of images in the validation set for UCF-QNRF is the same with that in [BL](https://github.com/ZhihengCV/Bayesian-Crowd-Counting). The current preprocessing code didn't include the splitting of the validation set. I will update the preprocess code later. Please set the learning rate to 2e-5 when training on QNRF if you want to reproduce the result. You should be able to reproduce our implementation on Google Colab for SHA.
+The list of images in the validation set for UCF-QNRF is the same as that in [BL](https://github.com/ZhihengCV/Bayesian-Crowd-Counting). Please set the learning rate to 2e-5, weight decay to 4e-5 when training on QNRF. 
 
 Some more details will be provided later
 
