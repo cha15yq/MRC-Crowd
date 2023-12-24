@@ -127,18 +127,18 @@ if __name__ == '__main__':
         for im_path in tqdm.tqdm(im_list):
             im, points = generate_data(im_path)
             name = os.path.basename(im_path)
-            # if phase == 'train':
-            #     w, h = im.size
-            #     d = np.zeros((h, w))
-            #     for j in range(len(points)):
-            #         point_x, point_y = points[j][0: 2].astype('int')
-            #         if point_y >= h or point_x >= w:
-            #             continue
-            #         d[point_y, point_x] = 1
-            #     d = gaussian_filter_density(d)
-            #     with h5py.File(os.path.join(sub_dir_den, '{}.h5'.format(name.replace('.jpg', ''))), 'w') as hf:
-            #         hf['density_map'] = d
-            #     print(name, 'GT_num:', len(points), 'Density_sum: {:.2f}'.format(d.sum()))
+            if phase == 'train':
+                w, h = im.size
+                d = np.zeros((h, w))
+                for j in range(len(points)):
+                    point_x, point_y = points[j][0: 2].astype('int')
+                    if point_y >= h or point_x >= w:
+                        continue
+                    d[point_y, point_x] = 1
+                d = gaussian_filter_density(d)
+                with h5py.File(os.path.join(sub_dir_den, '{}.h5'.format(name.replace('.jpg', ''))), 'w') as hf:
+                    hf['density_map'] = d
+                print(name, 'GT_num:', len(points), 'Density_sum: {:.2f}'.format(d.sum()))
             im_save_path = os.path.join(sub_dir_img, name)
             im.save(im_save_path)
             gd_save_path = im_save_path.replace('jpg', 'npy').replace('images', 'gt_points')
