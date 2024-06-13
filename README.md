@@ -10,7 +10,7 @@ Some more details will be provided later
 ![avatar](/result.png)
 
 # Pretrained Model
-The pretrained models could be downloaded from [Google Drive](https://drive.google.com/drive/folders/1MOc33Usba0k-IiGaHlVCfUICjkSNSEl_?usp=sharing) or [OneDrive](https://universityofstandrews907-my.sharepoint.com/:f:/g/personal/yq1_st-andrews_ac_uk/ErSqBStXrMJPq1mpNWZuwhUBcXDVSCM8MYWkyihZ7iqxpw?e=UwVdVD).
+The pretrained models could be downloaded from [Google Drive](https://drive.google.com/drive/folders/1MOc33Usba0k-IiGaHlVCfUICjkSNSEl_?usp=sharing) or [OneDrive](https://universityofstandrews907-my.sharepoint.com/:f:/g/personal/yq1_st-andrews_ac_uk/ErSqBStXrMJPq1mpNWZuwhUBcXDVSCM8MYWkyihZ7iqxpw?e=UwVdVD). Please test the pre-trained model on the images pre-processed with our code. We just realize the results would siginificantly change if the quality of the images changes for QNRF.
 
 # Eniviroment
 timm==0.5.4<br />
