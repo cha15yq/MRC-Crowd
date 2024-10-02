@@ -24,14 +24,14 @@ tqdm<br />
 
 If you find our work useful, please cite:
 ```
-@ARTICLE{Qian2024Semi,
+@ARTICLE{Semi2024Qian,
   author={Qian, Yifei and Hong, Xiaopeng and Guo, Zhongliang and Arandjelović, Ognjen and Donovan, Carl R.},
   journal={IEEE Transactions on Circuits and Systems for Video Technology}, 
-  title={Semi-Supervised Crowd Counting with Contextual Modeling: Facilitating Holistic Understanding of Crowd Scenes}, 
+  title={Semi-Supervised Crowd Counting With Contextual Modeling: Facilitating Holistic Understanding of Crowd Scenes}, 
   year={2024},
-  volume={},
-  number={},
-  pages={1-1},
+  volume={34},
+  number={9},
+  pages={8230-8241},
   doi={10.1109/TCSVT.2024.3392500}}
 
 ```
